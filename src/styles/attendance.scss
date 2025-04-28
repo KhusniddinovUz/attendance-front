@@ -1,0 +1,67 @@
+#attendance-page {
+
+  .attendance-button {
+    background-color: #21409A;
+    color: #fff;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.5s;
+
+    &:hover {
+      background-color: #4379F2;
+    }
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  padding-top: 50px;
+  display: flex;
+  justify-content: space-evenly;
+
+  .student-list {
+    width: fit-content;
+    border-radius: 10px;
+    position: relative;
+
+    svg {
+      width: 30px;
+      height: 30px;
+      color: #fff;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 10px;
+      position: absolute;
+      pointer-events: none;
+    }
+
+    select {
+      cursor: pointer;
+      font-family: inherit;
+      background-color: #21409A;
+      height: fit-content;
+      color: white;
+      padding: 12px;
+      width: 250px;
+      border: none;
+      border-radius: 10px;
+      font-size: 20px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+      -webkit-appearance: none;
+      appearance: none;
+      -moz-appearance: none;
+      outline: none;
+
+
+      option {
+        color: #fff;
+        padding: 30px;
+      }
+    }
+  }
+}
