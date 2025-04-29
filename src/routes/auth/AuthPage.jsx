@@ -2,21 +2,25 @@ import '../../styles/auth.css';
 import logo from '../../assets/logo.png';
 import {useState} from "react";
 import clsx from "clsx";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {login, register} from "../../store/authSlice";
+import {toast, ToastContainer} from "react-toastify";
 
 
 const AuthPage = () => {
+  const dispatch = useDispatch();
+  const loading = useSelector(state => state.auth.isLoading);
   const [loginName, setLoginName] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [registerUser, setRegisterUser] = useState({
     username: "", password: "", name: ""
   });
-  const dispatch = useDispatch();
   const [mode, setMode] = useState(false);
   const [bulletActiveIndex, setBulletActiveIndex] = useState(1);
   const [imageActiveIndex, setImageActiveIndex] = useState(1);
   const [textGroupStyle, setTextGroupStyle] = useState({transform: "translateY(0)"})
+  const loader = <div className="loader"></div>
+
 
   const inputFocusHandler = (e) => {
     e.target.classList.add("active");
@@ -37,21 +41,96 @@ const AuthPage = () => {
     setBulletActiveIndex(parseInt(index));
     setTextGroupStyle({transform: `translateY(${-(index - 1) * 2.2}rem)`});
   };
-  const loginHandler = () => {
-    dispatch(login({
-      username: loginName, password: loginPassword,
-    })).then(res => {
-      console.log(res);
-    }).catch(err => {
-      console.log(err);
-    });
+  const loginHandler = async () => {
+    let warningMsg = [];
+    if (loginName === "") warningMsg.push("loginni");
+    if (loginPassword === "") warningMsg.push("parolni");
+    if (warningMsg.length > 0) {
+      const last = warningMsg.pop();
+      let prompt = warningMsg.length ? `${warningMsg.join(", ")} va ${last} kiriting` : `${last} kiriting`;
+      prompt = prompt.charAt(0).toUpperCase() + prompt.slice(1);
+      toast.warning(prompt, {
+        style: {fontFamily: "Poppins"},
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    } else {
+      try {
+        await dispatch(login({
+          username: loginName, password: loginPassword,
+        })).unwrap();
+      } catch (err) {
+        toast.error(err["non_field_errors"][0], {
+          style: {fontFamily: "Poppins"},
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+    }
+
   };
-  const registerHandler = () => {
-    dispatch(register(registerUser)).then(res => {
-      console.log(res);
-    }).catch(err => {
-      console.log(err);
-    })
+  const registerHandler = async () => {
+    let warningMsg = [];
+    if (registerUser["name"] === "") warningMsg.push("ismingizni");
+    if (registerUser["username"] === "") warningMsg.push("loginni");
+    if (registerUser["password"] === "") warningMsg.push("parolni");
+    if (warningMsg.length > 0) {
+      const last = warningMsg.pop();
+      let prompt = warningMsg.length ? `${warningMsg.join(", ")} va ${last} kiriting` : `${last} kiriting`;
+      prompt = prompt.charAt(0).toUpperCase() + prompt.slice(1);
+      prompt = prompt.charAt(0).toUpperCase() + prompt.slice(1);
+      toast.warning(prompt, {
+        style: {fontFamily: "Poppins"},
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    } else if (registerUser["password"].length < 8) {
+      toast.warning("Parol kamida 8ta simvol bo'lishi kerak", {
+        style: {fontFamily: "Poppins"},
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    } else {
+      try {
+        await dispatch(register(registerUser)).unwrap();
+      } catch (err) {
+        toast.warning(err["username"][0], {
+          style: {fontFamily: "Poppins"},
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+    }
   };
 
 
@@ -79,7 +158,7 @@ const AuthPage = () => {
               <div className="actual-form">
                 <div className="input-wrap">
                   <input
-                      onChange={(e) => setLoginName(e.target.value)}
+                      onChange={(e) => setLoginName(e.target.value.trim())}
                       onFocus={inputFocusHandler}
                       onBlur={inputBlurHandler}
                       className="input-field"
@@ -105,7 +184,7 @@ const AuthPage = () => {
                   <label>Parol</label>
                 </div>
                 <button type={"button"} onClick={loginHandler}
-                        className="sign-btn">KIRISH
+                        className="sign-btn">{loading ? loader : "KIRISH"}
                 </button>
               </div>
             </form>
@@ -130,7 +209,7 @@ const AuthPage = () => {
                 <div className="input-wrap">
                   <input
                       onChange={(e) => setRegisterUser({
-                        ...registerUser, name: e.target.value
+                        ...registerUser, name: e.target.value.trim()
                       })}
                       onFocus={inputFocusHandler}
                       onBlur={inputBlurHandler}
@@ -146,7 +225,7 @@ const AuthPage = () => {
                 <div className="input-wrap">
                   <input
                       onChange={(e) => setRegisterUser({
-                        ...registerUser, username: e.target.value
+                        ...registerUser, username: e.target.value.trim()
                       })}
                       onFocus={inputFocusHandler}
                       onBlur={inputBlurHandler}
@@ -168,14 +247,14 @@ const AuthPage = () => {
                       onBlur={inputBlurHandler}
                       className="input-field"
                       type="password"
-                      minLength="4"
+                      minLength="8"
                       autoComplete="off"
                       required
                   />
                   <label>Parol</label>
                 </div>
                 <button onClick={registerHandler} type="button"
-                        className="sign-btn">RO'YXATDAN O'TISH
+                        className="sign-btn">{loading ? loader : "RO'YXATDAN O'TISH"}
                 </button>
               </div>
             </form>
@@ -212,6 +291,7 @@ const AuthPage = () => {
         </div>
       </div>
     </main>
+    <ToastContainer/>
   </div>);
 };
 

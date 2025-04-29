@@ -54,7 +54,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
     });
-    builder.addCase(login.rejected, state => {
+    builder.addCase(login.rejected, (state) => {
       state.isLoading = false;
     });
     builder.addCase(register.pending, state => {
