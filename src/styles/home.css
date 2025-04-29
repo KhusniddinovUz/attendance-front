@@ -1,37 +1,26 @@
-#homepage h1 {
-  color: #21409A;
-  margin-top: 50px;
-  width: 100%;
-  text-align: center;
+#homepage #home-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px;
+  border-bottom: 1px solid #21409A;
+  margin-bottom: 40px;
 }
-#homepage .qr-code-wrap {
-  margin-top: 50px;
-  width: 100%;
+#homepage #home-navbar #qrcode-form {
+  width: fit-content;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 40px;
 }
-#homepage .qr-code-wrap input {
-  color: #21409A;
-  font-size: 20px;
-  height: 50px;
-  outline: none;
-  padding: 15px;
-  border-radius: 10px;
-  border: 1px solid #21409A;
-}
-#homepage .qr-code-wrap input::placeholder {
-  color: rgba(33, 64, 154, 0.5);
-}
-#homepage .qr-code-wrap .select-wrap {
+#homepage #home-navbar #qrcode-form .select-wrap {
   border-radius: 10px;
   position: relative;
 }
-#homepage .qr-code-wrap .select-wrap svg {
-  width: 30px;
-  height: 30px;
+#homepage #home-navbar #qrcode-form .select-wrap svg {
+  width: 20px;
+  height: 20px;
   color: #fff;
   top: 50%;
   transform: translateY(-50%);
@@ -39,33 +28,52 @@
   position: absolute;
   pointer-events: none;
 }
-#homepage .qr-code-wrap .select-wrap select {
+#homepage #home-navbar #qrcode-form .select-wrap select {
   cursor: pointer;
   font-family: inherit;
-  background-color: #21409A;
+  background-color: #E5E7EB;
   height: fit-content;
-  color: white;
-  padding: 12px;
-  width: 250px;
+  color: #374151;
+  width: fit-content;
+  padding: 12px 42px 12px 12px;
   border: none;
   border-radius: 10px;
   font-size: 20px;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
   -webkit-appearance: none;
   appearance: none;
   -moz-appearance: none;
   outline: none;
 }
-#homepage .qr-code-wrap .select-wrap select option {
+#homepage #home-navbar #qrcode-form .select-wrap select option {
+  background: #fff;
   padding: 30px;
 }
-#homepage .qr-code-wrap button {
+#homepage #home-navbar #qrcode-form .select-wrap select option:hover {
+  background: #374151 !important;
+}
+#homepage #home-navbar #home-logut {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#homepage #home-navbar #home-logut h3 {
+  font-family: inherit;
+  color: #374151;
+}
+#homepage #home-navbar #home-logut svg {
+  margin-left: 10px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+}
+#homepage .qrcode-generate-button {
+  margin: auto;
   font-size: 20px;
   font-family: inherit;
   padding-left: 20px;
   padding-right: 20px;
   height: 50px;
-  display: inline-flex;
+  display: block;
   justify-content: center;
   align-items: center;
   border-radius: 10px;
@@ -76,13 +84,107 @@
   text-align: center;
   transition: background-color 0.5s;
 }
-#homepage .qr-code-wrap button:hover {
+#homepage .qrcode-generate-button:hover {
   background-color: #4379F2;
 }
 #homepage #qr-code {
   margin-top: 50px;
+  margin-bottom: 30px;
   display: flex;
   justify-content: center;
+}
+@media print {
+  #homepage .table, #homepage .table__body {
+    overflow: visible;
+    height: auto !important;
+    width: auto !important;
+  }
+}
+#homepage main.table {
+  margin: auto;
+  margin-bottom: 50px;
+  width: 900px;
+  height: 400px;
+  background-color: rgba(255, 255, 255, 0.3333333333);
+  backdrop-filter: blur(7px);
+  box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.3333333333);
+  border-radius: 0.8rem;
+  overflow: hidden;
+}
+#homepage main.table #table-info {
+  padding: 20px;
+}
+#homepage .table__body {
+  max-height: 100%;
+  background-color: rgba(255, 255, 255, 0.7333333333);
+  margin: auto;
+  border-radius: 0.6rem;
+  overflow: auto;
+  overflow: overlay;
+}
+#homepage .table__body::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+#homepage .table__body::-webkit-scrollbar-thumb {
+  border-radius: 0.5rem;
+  background-color: #E0E1E3;
+  visibility: hidden;
+}
+#homepage .table__body:hover::-webkit-scrollbar-thumb {
+  visibility: visible;
+}
+#homepage table {
+  width: 100%;
+}
+#homepage table, #homepage th, #homepage td {
+  border-collapse: collapse;
+  padding: 1rem;
+  text-align: left;
+}
+#homepage table tr {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+#homepage thead th {
+  position: sticky;
+  top: 0;
+  left: 0;
+  background-color: #E0E1E3;
+  color: #6b7280;
+}
+#homepage .table-buttons-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 20px;
+}
+#homepage .status-button {
+  margin-left: 10px !important;
+}
+#homepage .table-button {
+  margin: 0;
+  border: none;
+  outline: none;
+  background-color: #21409A;
+  color: #fff;
+  height: fit-content;
+  padding: 5px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 20px;
+}
+#homepage .present {
+  background-color: #BBF7D0;
+  color: #15803D;
+}
+#homepage .absent {
+  background-color: #FECACA;
+  color: #B91C1C;
+}
+@media (max-width: 1000px) {
+  #homepage td:not(:first-of-type) {
+    min-width: 12.1rem;
+  }
 }
 
 /*# sourceMappingURL=home.css.map */

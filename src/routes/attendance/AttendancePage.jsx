@@ -27,12 +27,8 @@ const AttendancePage = () => {
 
 
   const handleAttendance = async () => {
-    console.log(lesson_name, student);
     axios.put(`${url}/api/attendance/update/`, {
       lesson_name: lesson_name, student_name: student, status: "+",
-    }).then(async res => {
-      const fetchedData = await res.data;
-      console.log(fetchedData);
     }).catch(err => {
       console.log(err);
     })

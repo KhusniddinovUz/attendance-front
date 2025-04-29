@@ -20,6 +20,17 @@ export const register = createAsyncThunk('auth/register', async (payload, {rejec
   }
 });
 
+export const updateUserInfo = createAsyncThunk('auth/update', async (payload, {rejectWithValue}) => {
+  try {
+    const {data} = await axios.get(`${url}/api/teacher/profile/`, {
+      headers: {"Authorization": `Token ${payload}`},
+    });
+    return data;
+  } catch (err) {
+    return rejectWithValue(err.response?.data || 'Update failed');
+  }
+})
+
 const authSlice = createSlice({
   name: 'auth', initialState: {
     user: null, token: null, isLoggedIn: false, isLoading: false,
@@ -36,18 +47,15 @@ const authSlice = createSlice({
   }, extraReducers: builder => {
     builder.addCase(login.pending, state => {
       state.isLoading = true;
-      console.log("login pending");
     });
     builder.addCase(login.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isLoggedIn = true;
       state.user = action.payload.user;
       state.token = action.payload.token;
-      console.log("login done", action.payload);
     });
     builder.addCase(login.rejected, state => {
       state.isLoading = false;
-      console.log("login rejected");
     });
     builder.addCase(register.pending, state => {
       state.isLoading = true;
@@ -59,6 +67,17 @@ const authSlice = createSlice({
       state.token = action.payload.token;
     })
     builder.addCase(register.rejected, state => {
+      state.isLoading = false;
+    });
+    builder.addCase(updateUserInfo.pending, state => {
+      state.isLoading = true;
+    });
+    builder.addCase(updateUserInfo.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isLoggedIn = true;
+      state.user = action.payload;
+    })
+    builder.addCase(updateUserInfo.rejected, state => {
       state.isLoading = false;
     });
   }

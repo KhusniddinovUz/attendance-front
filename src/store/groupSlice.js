@@ -34,29 +34,23 @@ const groupSlice = createSlice({
   }, reducers: {}, extraReducers: builder => {
     builder.addCase(createLesson.pending, state => {
       state.isLoading = true;
-      console.log("create lesson pending");
     })
-    builder.addCase(createLesson.fulfilled, (state, action) => {
+    builder.addCase(createLesson.fulfilled, (state) => {
       state.isLoading = false;
-      console.log("create lesson done", action.payload);
     });
     builder.addCase(createLesson.rejected, state => {
       state.isLoading = false;
-      console.log("create lesson rejected");
     });
     //Get Groups Builders
     builder.addCase(getGroups.pending, state => {
       state.isLoading = true;
-      console.log("get groups pending");
     })
     builder.addCase(getGroups.fulfilled, (state, action) => {
       state.groups = action.payload
       state.isLoading = false;
-      console.log("get groups done", action.payload);
     });
     builder.addCase(getGroups.rejected, state => {
       state.isLoading = false;
-      console.log("get groups rejected");
     });
   }
 });

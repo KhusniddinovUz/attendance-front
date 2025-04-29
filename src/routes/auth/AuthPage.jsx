@@ -56,7 +56,7 @@ const AuthPage = () => {
 
 
   return (<div>
-    <main className={clsx({"sign-up-mode": mode})}>
+    <main id="auth-main" className={clsx({"sign-up-mode": mode})}>
       <div className="box">
         <div className="inner-box">
           <div className="forms-wrap">
