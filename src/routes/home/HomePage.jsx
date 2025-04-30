@@ -168,7 +168,7 @@ const HomePage = () => {
             onClick={generateButtonHandler}>{loading ? loader : "Yaratish"}</button>
     <div id="qr-code">
       {showQRCode && (<QRCode
-          value={`http://localhost:5173/attendance/${lesson["name"]}/${lesson["group_name"]}/${lesson["date"]}`}
+          value={`http://localhost:5173/attendance/${lesson["name"]}/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
           size={256}/>)}
     </div>
     {showQRCode && (<main className="table" id="customers_table">

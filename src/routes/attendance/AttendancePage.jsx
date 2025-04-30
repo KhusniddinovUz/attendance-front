@@ -8,12 +8,12 @@ import {url} from "../../data/api.js";
 const AttendancePage = () => {
   const [data, setData] = useState([]);
   const [student, setStudent] = useState("");
-  const {lesson_name, group_name, date} = useParams();
+  const {lesson_name, group_name, date, para} = useParams();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      axios.get(`${url}/api/attendance/get/?lesson_name=${lesson_name}&group_name=${group_name}&date=${date}`).then(async res => {
+      axios.get(`${url}/api/attendance/get/?lesson_name=${lesson_name}&group_name=${group_name}&date=${date}&para=${para}`).then(async res => {
         const fetchedData = await res.data;
         console.log(fetchedData);
         setData(fetchedData);
@@ -28,7 +28,7 @@ const AttendancePage = () => {
 
   const handleAttendance = async () => {
     axios.put(`${url}/api/attendance/update/`, {
-      lesson_name: lesson_name, student_name: student, status: "+",
+      lesson_name: lesson_name, student_name: student, status: "+", para: para,
     }).catch(err => {
       console.log(err);
     })
