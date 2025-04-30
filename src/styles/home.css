@@ -93,6 +93,19 @@
   display: flex;
   justify-content: center;
 }
+#homepage #qr-code #empty-qrcode-space {
+  width: 256px;
+  height: 256px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #374151;
+  border: 1px solid rgb(229, 231, 235);
+}
+#homepage #qr-code #empty-qrcode-space svg {
+  width: 30px;
+}
 @media print {
   #homepage .table, #homepage .table__body {
     overflow: visible;
