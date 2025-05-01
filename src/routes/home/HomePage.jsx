@@ -146,6 +146,8 @@ const HomePage = () => {
 
   const logoutHandler = () => {
     dispatch(logout());
+    dispatch(turnOff());
+    setAttendanceList([]);
     navigate("/auth");
   }
 
@@ -236,44 +238,40 @@ const HomePage = () => {
           size={256}/>)}
     </div>
     <main className="table" id="customers_table">
-      {attendanceLoading ? loader : (
-          <section className="table__body">
-            {isActive && (<p id="table-info">{lesson.name} - {lesson.date}</p>)}
-            <table>
-              <thead>
-              <tr>
-                <th> O'QUVCHI ISM FAMILYASI</th>
-                <th> STATUS</th>
-                <th> DAVOMAT</th>
-              </tr>
-              </thead>
-              <tbody>
-              {attendanceList.length > 0 && attendanceList.map(item => (
-                  <tr key={item["student_name"]}>
-                    <td> {item["student_name"]}</td>
-                    <td>
+      {attendanceLoading ? loader : (<section className="table__body">
+        {isActive && (<p id="table-info">{lesson.name} - {lesson.date}</p>)}
+        <table>
+          <thead>
+          <tr>
+            <th> O'QUVCHI ISM FAMILYASI</th>
+            <th> STATUS</th>
+            <th> DAVOMAT</th>
+          </tr>
+          </thead>
+          <tbody>
+          {attendanceList.length > 0 && attendanceList.map(item => (
+              <tr key={item["student_name"]}>
+                <td> {item["student_name"]}</td>
+                <td>
               <span style={{cursor: "default"}}
                     className={clsx("table-button", "status-button", {
-                      present: item["status"] === '+',
-                      absent: item["status"] === '-',
+                      present: item["status"] === '+', absent: item["status"] === '-',
                     })}>{item["status"]}</span>
-                    </td>
-                    <td>
-                      <div className="table-buttons-wrapper">
+                </td>
+                <td>
+                  <div className="table-buttons-wrapper">
                     <span
                         onClick={() => studentAttendanceHandler(item["student_name"], lesson["name"], "+")}
                         className="present table-button">+</span>
-                        <span
-                            onClick={() => studentAttendanceHandler(item["student_name"], lesson["name"], "-")}
-                            className="absent table-button">-</span>
-                      </div>
-                    </td>
-                  </tr>
-              ))}
-              </tbody>
-            </table>
-          </section>
-      )}
+                    <span
+                        onClick={() => studentAttendanceHandler(item["student_name"], lesson["name"], "-")}
+                        className="absent table-button">-</span>
+                  </div>
+                </td>
+              </tr>))}
+          </tbody>
+        </table>
+      </section>)}
     </main>
     <ToastContainer/>
   </div>)
