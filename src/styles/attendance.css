@@ -4,6 +4,8 @@
   justify-content: space-evenly;
 }
 #attendance-page .attendance-button {
+  font-family: inherit;
+  width: fit-content;
   background-color: #21409A;
   color: #fff;
   border: none;
@@ -16,9 +18,6 @@
 }
 #attendance-page .attendance-button:hover {
   background-color: #4379F2;
-}
-#attendance-page h1 {
-  text-align: center;
 }
 #attendance-page .student-list {
   width: fit-content;
@@ -55,6 +54,16 @@
 #attendance-page .student-list select option {
   color: #fff;
   padding: 30px;
+}
+
+@media (max-width: 500px) {
+  #attendance-page {
+    padding: 50px 0;
+    height: 100vh;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
 /*# sourceMappingURL=attendance.css.map */
