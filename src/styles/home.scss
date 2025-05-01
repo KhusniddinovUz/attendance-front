@@ -146,6 +146,13 @@
     border-radius: .8rem;
     overflow: hidden;
 
+    .loader {
+      width: 100px;
+      height: 100px;
+      margin-top: 150px;
+      background-color: #21409A;
+    }
+
     #table-info {
       padding: 20px;
     }
@@ -153,6 +160,7 @@
   }
 
   .table__body {
+    position: relative;
     max-height: 100%;
     background-color: #fffb;
     margin: auto;
@@ -180,6 +188,8 @@
 
   table {
     width: 100%;
+
+
   }
 
   table, th, td {
@@ -209,6 +219,10 @@
   }
 
   .status-button {
+    text-align: center;
+    display: block;
+    width: 45px !important;
+    height: 40px !important;
     margin-left: 10px !important;
   }
 

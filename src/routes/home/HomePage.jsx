@@ -9,22 +9,42 @@ import {url} from "../../data/api.js";
 import {toast, ToastContainer} from "react-toastify";
 import {logout} from "../../store/authSlice";
 import {useNavigate} from "react-router";
+import {turnOn, turnOff, selectAttendanceState} from "../../store/attendanceSlice.js";
+import clsx from "clsx";
 
 const HomePage = () => {
+  const {isActive, expiresAt, requestData} = useSelector(selectAttendanceState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const subjects = useSelector(state => state.auth.user["subjects"]);
-  const [showQRCode, setShowQRCode] = useState(false);
   const loading = useSelector(state => state.group.isLoading);
+  const [attendanceLoading, setAttendanceLoading] = useState(false);
   const groups = useSelector(state => state.group.groups);
-  const [lesson, setLesson] = useState({
-    name: "notchosen", group_name: "notchosen", date: "", para: "notchosen",
-  });
+  const [lesson, setLesson] = useState(requestData);
   const token = useSelector(state => state.auth.token);
   const username = useSelector(state => state.auth.user["name"]);
   const [attendanceList, setAttendanceList] = useState([]);
   const loader = <div className="loader"></div>
 
+  useEffect(() => {
+    if (!expiresAt) return;
+
+    const now = Date.now();
+    const remaining = expiresAt - now;
+
+    if (remaining <= 0) {
+      dispatch(turnOff());
+      setAttendanceList([]);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      dispatch(turnOff());
+      setAttendanceList([]);
+    }, remaining);
+
+    return () => clearTimeout(timeout); // cleanup on unmount or re-run
+  }, [expiresAt, dispatch]);
 
   useEffect(() => {
     const updateUserInfoHandler = async () => {
@@ -53,6 +73,31 @@ const HomePage = () => {
     }))
   }, [lesson["group_name"]]);
 
+  useEffect(() => {
+    if (!isActive) return;
+    const fetchData = async () => {
+      axios.get(`${url}/api/attendance/get/`, {
+        params: {
+          "lesson_name": requestData["name"],
+          "group_name": requestData["group_name"],
+          "date": requestData["date"],
+          "para": requestData["para"],
+        },
+      }).then(async res => {
+        const fetchedData = await res.data;
+        setAttendanceList(fetchedData);
+      }).catch(err => {
+        console.log(err);
+      });
+    };
+
+    fetchData();
+
+    const interval = setInterval(fetchData, 3000); // Fetch every 3s
+
+    return () => clearInterval(interval); // Clean up on unmount
+  }, [isActive])
+
   const generateButtonHandler = async () => {
     let missing = [];
     if (lesson["name"] === "notchosen") missing.push("fan nomini")
@@ -76,15 +121,26 @@ const HomePage = () => {
     } else {
       const resp = await dispatch(createLesson({lesson: lesson, token: token})).unwrap();
       setAttendanceList(resp);
-      setShowQRCode(true);
+      dispatch(turnOn(lesson));
     }
   };
 
   const studentAttendanceHandler = async (student, lesson_name, status) => {
+    setAttendanceLoading(true);
     axios.put(`${url}/api/attendance/update/`, {
-      lesson_name: lesson_name, student_name: student, status: status,
+      lesson_name: lesson_name,
+      student_name: student,
+      status: status,
+      para: lesson["para"],
+      date: lesson["date"],
+      group_name: lesson["group_name"],
     }).catch(err => {
       console.log(err);
+    }).then(res => {
+      setAttendanceList(res.data);
+      setTimeout(() => {
+        setAttendanceLoading(false);
+      }, 300);
     })
   };
 
@@ -98,12 +154,12 @@ const HomePage = () => {
       <div id="qrcode-form">
         <div className="select-wrap">
           <select
+              disabled={isActive}
               defaultValue=""
               onChange={e => {
                 setLesson(prevState => ({
-                  ...prevState, name: e.target.value
+                  ...prevState, name: e.target.value.trim()
                 }));
-                setShowQRCode(false);
               }}>
             <option value="" disabled={true} hidden>Fanni tanlash</option>
             {subjects && subjects.split(",").map(subject => <option value={subject}
@@ -117,12 +173,12 @@ const HomePage = () => {
         </div>
         <div className="select-wrap">
           <select
+              disabled={isActive}
               defaultValue=""
               onChange={e => {
                 setLesson(prevState => ({
                   ...prevState, group_name: e.target.value
                 }));
-                setShowQRCode(false);
               }}>
             <option value="" disabled={true} hidden>Guruhni tanlash</option>
             {groups.map(group => <option value={group.id}
@@ -136,12 +192,12 @@ const HomePage = () => {
         </div>
         <div className="select-wrap">
           <select
+              disabled={isActive}
               defaultValue=""
               onChange={e => {
                 setLesson(prevState => ({
                   ...prevState, para: e.target.value
                 }));
-                setShowQRCode(false);
               }}>
             <option value="" disabled={true} hidden>Para</option>
             <option value={1}>1</option>
@@ -164,69 +220,60 @@ const HomePage = () => {
         </svg>
       </div>
     </nav>
-    <button className="qrcode-generate-button"
-            onClick={generateButtonHandler}>{loading ? loader : "Yaratish"}</button>
+    {!isActive && (<button className="qrcode-generate-button"
+                           onClick={generateButtonHandler}>{loading ? loader : "Yaratish"}</button>)}
     <div id="qr-code">
-      {!showQRCode && (
-          <div id="empty-qrcode-space">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-              <path
-                  fill="#374151"
-                  d="M0 80C0 53.5 21.5 32 48 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48L0 80zM64 96l0 64 64 0 0-64L64 96zM0 336c0-26.5 21.5-48 48-48l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96zm64 16l0 64 64 0 0-64-64 0zM304 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm80 64l-64 0 0 64 64 0 0-64zM256 304c0-8.8 7.2-16 16-16l64 0c8.8 0 16 7.2 16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s7.2-16 16-16s16 7.2 16 16l0 96c0 8.8-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s-7.2-16-16-16s-16 7.2-16 16l0 64c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-160zM368 480a16 16 0 1 1 0-32 16 16 0 1 1 0 32zm64 0a16 16 0 1 1 0-32 16 16 0 1 1 0 32z"/>
-            </svg>
-            QR Kod be yerda bo'ladi
-          </div>
-      )}
-      {showQRCode && (<QRCode
+      {!isActive && (<div id="empty-qrcode-space">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+          <path
+              fill="#374151"
+              d="M0 80C0 53.5 21.5 32 48 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48L0 80zM64 96l0 64 64 0 0-64L64 96zM0 336c0-26.5 21.5-48 48-48l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96zm64 16l0 64 64 0 0-64-64 0zM304 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm80 64l-64 0 0 64 64 0 0-64zM256 304c0-8.8 7.2-16 16-16l64 0c8.8 0 16 7.2 16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s7.2-16 16-16s16 7.2 16 16l0 96c0 8.8-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s-7.2-16-16-16s-16 7.2-16 16l0 64c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-160zM368 480a16 16 0 1 1 0-32 16 16 0 1 1 0 32zm64 0a16 16 0 1 1 0-32 16 16 0 1 1 0 32z"/>
+        </svg>
+        QR Kod be yerda bo'ladi
+      </div>)}
+      {isActive && (<QRCode
           value={`http://localhost:5173/attendance/${lesson["name"]}/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
           size={256}/>)}
     </div>
     <main className="table" id="customers_table">
-      <section className="table__body">
-        {showQRCode && (<p id="table-info">{lesson.name} - {lesson.date}</p>)}
-        <table>
-          <thead>
-          <tr>
-            <th> O'QUVCHI ISM FAMILYASI</th>
-            <th> STATUS</th>
-            <th> DAVOMAT</th>
-          </tr>
-          </thead>
-          <tbody>
-          {attendanceList.length > 0 && attendanceList.map(item => (
-              <tr key={item["student_name"]}>
-                <td> {item["student_name"]}</td>
-                <td>
+      {attendanceLoading ? loader : (
+          <section className="table__body">
+            {isActive && (<p id="table-info">{lesson.name} - {lesson.date}</p>)}
+            <table>
+              <thead>
+              <tr>
+                <th> O'QUVCHI ISM FAMILYASI</th>
+                <th> STATUS</th>
+                <th> DAVOMAT</th>
+              </tr>
+              </thead>
+              <tbody>
+              {attendanceList.length > 0 && attendanceList.map(item => (
+                  <tr key={item["student_name"]}>
+                    <td> {item["student_name"]}</td>
+                    <td>
               <span style={{cursor: "default"}}
-                    className="table-button absent status-button">{item["status"]}</span>
-                </td>
-                <td>
-                  <div className="table-buttons-wrapper">
+                    className={clsx("table-button", "status-button", {
+                      present: item["status"] === '+',
+                      absent: item["status"] === '-',
+                    })}>{item["status"]}</span>
+                    </td>
+                    <td>
+                      <div className="table-buttons-wrapper">
                     <span
                         onClick={() => studentAttendanceHandler(item["student_name"], lesson["name"], "+")}
                         className="present table-button">+</span>
-                    <span
-                        onClick={() => studentAttendanceHandler(item["student_name"], lesson["name"], "-")}
-                        className="absent table-button">-</span>
-                  </div>
-                </td>
-              </tr>))}
-          {/*<tr>*/}
-          {/*  <td> Shakhobiddin Khusniddinov</td>*/}
-          {/*  <td>*/}
-          {/*    <span style={{cursor: "default"}}*/}
-          {/*          className="table-button absent status-button">-</span>*/}
-          {/*  </td>*/}
-          {/*  <td>*/}
-          {/*    <div className="table-buttons-wrapper">*/}
-          {/*      <span className="present table-button">+</span>*/}
-          {/*      <span className="absent table-button">-</span>*/}
-          {/*    </div>*/}
-          {/*  </td>*/}
-          {/*</tr>*/}
-          </tbody>
-        </table>
-      </section>
+                        <span
+                            onClick={() => studentAttendanceHandler(item["student_name"], lesson["name"], "-")}
+                            className="absent table-button">-</span>
+                      </div>
+                    </td>
+                  </tr>
+              ))}
+              </tbody>
+            </table>
+          </section>
+      )}
     </main>
     <ToastContainer/>
   </div>)

@@ -3,13 +3,14 @@ import {persistReducer, persistStore} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import authReducer from "./authSlice";
 import groupReducer from "./groupSlice";
+import attendanceReducer from "./attendanceSlice";
 
 const persistConfig = {
-  key: "root", storage, whitelist: ["auth"],
+  key: "root", storage, whitelist: ["auth", "attendance"],
 };
 
 const rootReducer = combineReducers({
-  auth: authReducer, group: groupReducer,
+  auth: authReducer, group: groupReducer, attendance: attendanceReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

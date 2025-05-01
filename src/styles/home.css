@@ -124,10 +124,17 @@
   border-radius: 0.8rem;
   overflow: hidden;
 }
+#homepage main.table .loader {
+  width: 100px;
+  height: 100px;
+  margin-top: 150px;
+  background-color: #21409A;
+}
 #homepage main.table #table-info {
   padding: 20px;
 }
 #homepage .table__body {
+  position: relative;
   max-height: 100%;
   background-color: rgba(255, 255, 255, 0.7333333333);
   margin: auto;
@@ -172,6 +179,10 @@
   gap: 20px;
 }
 #homepage .status-button {
+  text-align: center;
+  display: block;
+  width: 45px !important;
+  height: 40px !important;
   margin-left: 10px !important;
 }
 #homepage .table-button {
