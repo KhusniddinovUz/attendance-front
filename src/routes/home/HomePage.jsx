@@ -11,12 +11,12 @@ import {logout} from "../../store/authSlice";
 import {useNavigate} from "react-router";
 import {turnOn, turnOff, selectAttendanceState} from "../../store/attendanceSlice.js";
 import clsx from "clsx";
+import dayjs from "dayjs";
 
 const HomePage = () => {
   const {isActive, expiresAt, requestData} = useSelector(selectAttendanceState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const subjects = useSelector(state => state.auth.user["subjects"]);
   const loading = useSelector(state => state.group.isLoading);
   const [attendanceLoading, setAttendanceLoading] = useState(false);
   const groups = useSelector(state => state.group.groups);
@@ -49,16 +49,17 @@ const HomePage = () => {
   useEffect(() => {
     const updateUserInfoHandler = async () => {
       try {
-        dispatch(updateUserInfo(token));
+        await dispatch(updateUserInfo(token)).unwrap();
       } catch (error) {
-        console.error('Error fetching user info:', error.response ? error.response.data : error.message);
+        console.error('Error fetching user info:', error);
+        dispatch(logout());
       }
     }
     const getGroupsHandler = async () => {
       try {
         dispatch(getGroups(token));
       } catch (error) {
-        console.error('Error fetching groups:', error.response ? error.response.data : error.message);
+        console.error('Error fetching groups:', error);
       }
     };
     getGroupsHandler();
@@ -100,7 +101,6 @@ const HomePage = () => {
 
   const generateButtonHandler = async () => {
     let missing = [];
-    if (lesson["name"] === "notchosen") missing.push("fan nomini")
     if (lesson["group_name"] === "notchosen") missing.push("guruhni")
     if (lesson["para"] === "notchosen") missing.push("parani")
     if (missing.length > 0) {
@@ -125,10 +125,9 @@ const HomePage = () => {
     }
   };
 
-  const studentAttendanceHandler = async (student, lesson_name, status) => {
+  const studentAttendanceHandler = async (student, status) => {
     setAttendanceLoading(true);
     axios.put(`${url}/api/attendance/update/`, {
-      lesson_name: lesson_name,
       student_name: student,
       status: status,
       para: lesson["para"],
@@ -154,25 +153,6 @@ const HomePage = () => {
   return (<div id="homepage">
     <nav id="home-navbar">
       <div id="qrcode-form">
-        <div className="select-wrap">
-          <select
-              disabled={isActive}
-              defaultValue=""
-              onChange={e => {
-                setLesson(prevState => ({
-                  ...prevState, name: e.target.value.trim()
-                }));
-              }}>
-            <option value="" disabled={true} hidden>Fanni tanlash</option>
-            {subjects && subjects.split(",").map(subject => <option value={subject}
-                                                                    key={subject}>{subject}</option>)}
-          </select>
-          <svg xmlns="http://www.w3.org/2000/svg" height="32" width="20"
-               viewBox="0 0 320 512">
-            <path fill="#374151"
-                  d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"/>
-          </svg>
-        </div>
         <div className="select-wrap">
           <select
               disabled={isActive}
@@ -234,12 +214,14 @@ const HomePage = () => {
         QR Kod be yerda bo'ladi
       </div>)}
       {isActive && (<QRCode
-          value={`http://localhost:5173/attendance/${lesson["name"]}/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
+          value={`http://localhost:5173/attendance/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
           size={256}/>)}
     </div>
     <main className="table" id="customers_table">
       {attendanceLoading ? loader : (<section className="table__body">
-        {isActive && (<p id="table-info">{lesson.name} - {lesson.date}</p>)}
+        {isActive && (
+            <p id="table-info">{lesson.para}chi para
+              - {dayjs(lesson.date).format("MMMM D")}</p>)}
         <table>
           <thead>
           <tr>
@@ -261,10 +243,10 @@ const HomePage = () => {
                 <td>
                   <div className="table-buttons-wrapper">
                     <span
-                        onClick={() => studentAttendanceHandler(item["student_name"], lesson["name"], "+")}
+                        onClick={() => studentAttendanceHandler(item["student_name"], "+")}
                         className="present table-button">+</span>
                     <span
-                        onClick={() => studentAttendanceHandler(item["student_name"], lesson["name"], "-")}
+                        onClick={() => studentAttendanceHandler(item["student_name"], "-")}
                         className="absent table-button">-</span>
                   </div>
                 </td>

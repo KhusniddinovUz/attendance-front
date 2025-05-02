@@ -11,7 +11,7 @@ const App = () => {
            element={<RequireAuthWrapper><HomePage/></RequireAuthWrapper>}/>
     <Route path="auth"
            element={<RedirectIfAuthWrapper><AuthPage/></RedirectIfAuthWrapper>}/>
-    <Route path="attendance/:lesson_name/:group_name/:date/:para"
+    <Route path="attendance/:group_name/:date/:para"
            element={<RequireAuthWrapper><AttendancePage/></RequireAuthWrapper>}/>
   </Routes>);
 }

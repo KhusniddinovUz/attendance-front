@@ -114,10 +114,9 @@
   }
 }
 #homepage main.table {
-  margin: auto;
-  margin-bottom: 50px;
+  margin: auto auto 50px;
   width: 900px;
-  height: 400px;
+  min-height: 400px;
   background-color: rgba(255, 255, 255, 0.3333333333);
   backdrop-filter: blur(7px);
   box-shadow: 0 0.4rem 0.8rem rgba(0, 0, 0, 0.3333333333);

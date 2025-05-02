@@ -9,13 +9,13 @@ import {toast, ToastContainer} from "react-toastify";
 const AttendancePage = () => {
   const [data, setData] = useState([]);
   const [student, setStudent] = useState("");
-  const {lesson_name, group_name, date, para} = useParams();
+  const {group_name, date, para} = useParams();
   const [loading, setLoading] = useState(false);
   const loader = <div className="loader"></div>;
 
   useEffect(() => {
     const fetchData = async () => {
-      axios.get(`${url}/api/attendance/get/?lesson_name=${lesson_name}&group_name=${group_name}&date=${date}&para=${para}`).then(async res => {
+      axios.get(`${url}/api/attendance/get/?group_name=${group_name}&date=${date}&para=${para}`).then(async res => {
         const fetchedData = await res.data;
         setData(fetchedData);
       }).catch(err => {
@@ -24,18 +24,13 @@ const AttendancePage = () => {
     };
 
     fetchData();
-  }, [lesson_name, group_name, date, setLoading, loading]);
+  }, [group_name, date, setLoading, loading]);
 
 
   const handleAttendance = async () => {
     setLoading(true);
     axios.put(`${url}/api/attendance/update/`, {
-      lesson_name: lesson_name,
-      student_name: student,
-      status: "+",
-      para: para,
-      date: date,
-      group_name: group_name
+      student_name: student, status: "+", para: para, date: date, group_name: group_name
     }).catch(err => {
       setTimeout(() => {
         setLoading(false);
