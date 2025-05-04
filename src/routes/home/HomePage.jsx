@@ -124,11 +124,28 @@ const HomePage = () => {
         theme: "dark",
       });
     } else {
-      const resp = await dispatch(createLesson({lesson: lesson, token: token})).unwrap();
-      setAttendanceList(resp);
-      // const expirationTimer = lesson["para"] === "1" ? 900000 : 300000;
-      const expirationTimer = 6000;
-      dispatch(turnOn({lesson: lesson, expirationTimer: expirationTimer}));
+      try {
+        const resp = await dispatch(createLesson({
+          lesson: lesson, token: token
+        })).unwrap();
+        setAttendanceList(resp);
+        // const expirationTimer = lesson["para"] === "1" ? 900000 : 300000;
+        const expirationTimer = 6000;
+        dispatch(turnOn({lesson: lesson, expirationTimer: expirationTimer}));
+      } catch (e) {
+        toast.error(e["non_field_errors"][0], {
+          style: {fontFamily: "Poppins"},
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+
     }
   };
 
