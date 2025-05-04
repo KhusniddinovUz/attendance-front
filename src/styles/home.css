@@ -66,13 +66,20 @@
   width: 30px;
   height: 30px;
 }
-#homepage .qrcode-generate-button {
+#homepage #home-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 50px;
+  width: 90vw;
   margin: auto;
+}
+#homepage .qrcode-generate-button {
+  height: 50px;
+  width: fit-content;
   font-size: 20px;
   font-family: inherit;
   padding-left: 20px;
   padding-right: 20px;
-  height: 50px;
   display: block;
   justify-content: center;
   align-items: center;
@@ -87,9 +94,14 @@
 #homepage .qrcode-generate-button:hover {
   background-color: #4379F2;
 }
+#homepage #qrcode-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 50px;
+  align-items: center;
+}
 #homepage #qr-code {
-  margin-top: 50px;
-  margin-bottom: 30px;
   display: flex;
   justify-content: center;
 }
@@ -114,7 +126,7 @@
   }
 }
 #homepage main.table {
-  margin: auto auto 50px;
+  margin: auto;
   width: 900px;
   min-height: 400px;
   background-color: rgba(255, 255, 255, 0.3333333333);
@@ -139,7 +151,6 @@
   margin: auto;
   border-radius: 0.6rem;
   overflow: auto;
-  overflow: overlay;
 }
 #homepage .table__body::-webkit-scrollbar {
   width: 0.5rem;
@@ -203,6 +214,27 @@
 #homepage .absent {
   background-color: #FECACA;
   color: #B91C1C;
+}
+#homepage .qr-code-timer {
+  width: 256px;
+  background-color: #fff;
+  padding: 20px;
+  outline: none;
+  border: 3px solid #000;
+  border-radius: 5px;
+  color: #000;
+  font-family: inherit;
+  font-size: 60px;
+  font-weight: bold;
+}
+#homepage .qr-code-timer:hover {
+  background-color: rgba(255, 255, 255, 0.3333333333) !important;
+}
+#homepage .disabled {
+  cursor: no-drop;
+}
+#homepage .disabled:hover {
+  background-color: #21409A;
 }
 @media (max-width: 1000px) {
   #homepage td:not(:first-of-type) {

@@ -80,14 +80,22 @@
 
   }
 
+  #home-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+    width: 90vw;
+    margin: auto;
+  }
+
 
   .qrcode-generate-button {
-    margin: auto;
+    height: 50px;
+    width: fit-content;
     font-size: 20px;
     font-family: inherit;
     padding-left: 20px;
     padding-right: 20px;
-    height: 50px;
     display: block;
     justify-content: center;
     align-items: center;
@@ -104,6 +112,13 @@
     }
   }
 
+  #qrcode-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 50px;
+    align-items: center;
+  }
 
   #qr-code {
     #empty-qrcode-space {
@@ -121,8 +136,6 @@
       }
     }
 
-    margin-top: 50px;
-    margin-bottom: 30px;
     display: flex;
     justify-content: center;
   }
@@ -136,7 +149,7 @@
   }
 
   main.table {
-    margin: auto auto 50px;
+    margin: auto;
     width: 900px;
     min-height: 400px;
     background-color: #fff5;
@@ -165,7 +178,6 @@
     margin: auto;
     border-radius: .6rem;
     overflow: auto;
-    overflow: overlay;
   }
 
 
@@ -187,8 +199,6 @@
 
   table {
     width: 100%;
-
-
   }
 
   table, th, td {
@@ -246,6 +256,31 @@
   .absent {
     background-color: #FECACA;
     color: #B91C1C;
+  }
+
+  .qr-code-timer {
+    width: 256px;
+    background-color: #fff;
+    padding: 20px;
+    outline: none;
+    border: 3px solid #000;
+    border-radius: 5px;
+    color: #000;
+    font-family: inherit;
+    font-size: 60px;
+    font-weight: bold;
+
+    &:hover {
+      background-color: #fff5 !important;
+    }
+  }
+
+  .disabled {
+    cursor: no-drop;
+
+    &:hover {
+      background-color: #21409A;
+    }
   }
 
 

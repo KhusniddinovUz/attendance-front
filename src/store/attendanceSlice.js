@@ -9,8 +9,9 @@ const initialState = {
 const attendanceSlice = createSlice({
   name: 'attendance', initialState: initialState, reducers: {
     turnOn: (state, action) => {
-      state.expiresAt = Date.now() + 60000; // 1 minute
-      state.requestData = action.payload;
+      console.log(action.payload);
+      state.expiresAt = Date.now() + action.payload.expirationTimer; // 1 minute
+      state.requestData = action.payload.lesson;
     }, turnOff: (state) => {
       state.expiresAt = null;
       state.requestData = {

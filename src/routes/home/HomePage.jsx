@@ -12,6 +12,7 @@ import {useNavigate} from "react-router";
 import {turnOn, turnOff, selectAttendanceState} from "../../store/attendanceSlice.js";
 import clsx from "clsx";
 import dayjs from "dayjs";
+import Countdown from "react-countdown";
 
 const HomePage = () => {
   const {isActive, expiresAt, requestData} = useSelector(selectAttendanceState);
@@ -24,7 +25,7 @@ const HomePage = () => {
   const token = useSelector(state => state.auth.token);
   const username = useSelector(state => state.auth.user["name"]);
   const [attendanceList, setAttendanceList] = useState([]);
-  const loader = <div className="loader"></div>
+  const loader = <div className="loader"></div>;
 
   useEffect(() => {
     if (!expiresAt) return;
@@ -100,6 +101,7 @@ const HomePage = () => {
   }, [isActive])
 
   const generateButtonHandler = async () => {
+    console.log("clicked");
     let missing = [];
     if (lesson["group_name"] === "notchosen") missing.push("guruhni")
     if (lesson["para"] === "notchosen") missing.push("parani")
@@ -121,7 +123,8 @@ const HomePage = () => {
     } else {
       const resp = await dispatch(createLesson({lesson: lesson, token: token})).unwrap();
       setAttendanceList(resp);
-      dispatch(turnOn(lesson));
+      const expirationTimer = lesson["para"] === "1" ? 900000 : 300000;
+      dispatch(turnOn({lesson: lesson, expirationTimer: expirationTimer}));
     }
   };
 
@@ -202,59 +205,107 @@ const HomePage = () => {
         </svg>
       </div>
     </nav>
-    {!isActive && (<button className="qrcode-generate-button"
-                           onClick={generateButtonHandler}>{loading ? loader : "Yaratish"}</button>)}
-    <div id="qr-code">
-      {!isActive && (<div id="empty-qrcode-space">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-          <path
-              fill="#374151"
-              d="M0 80C0 53.5 21.5 32 48 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48L0 80zM64 96l0 64 64 0 0-64L64 96zM0 336c0-26.5 21.5-48 48-48l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96zm64 16l0 64 64 0 0-64-64 0zM304 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm80 64l-64 0 0 64 64 0 0-64zM256 304c0-8.8 7.2-16 16-16l64 0c8.8 0 16 7.2 16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s7.2-16 16-16s16 7.2 16 16l0 96c0 8.8-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s-7.2-16-16-16s-16 7.2-16 16l0 64c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-160zM368 480a16 16 0 1 1 0-32 16 16 0 1 1 0 32zm64 0a16 16 0 1 1 0-32 16 16 0 1 1 0 32z"/>
-        </svg>
-        QR Kod be yerda bo'ladi
-      </div>)}
-      {isActive && (<QRCode
-          value={`http://localhost:5173/attendance/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
-          size={256}/>)}
-    </div>
-    <main className="table" id="customers_table">
-      {attendanceLoading ? loader : (<section className="table__body">
-        {isActive && (
-            <p id="table-info">{lesson.para}chi para
-              - {dayjs(lesson.date).format("MMMM D")}</p>)}
-        <table>
-          <thead>
-          <tr>
-            <th> O'QUVCHI ISM FAMILYASI</th>
-            <th> STATUS</th>
-            <th> DAVOMAT</th>
-          </tr>
-          </thead>
-          <tbody>
-          {attendanceList.length > 0 && attendanceList.map(item => (
-              <tr key={item["student_name"]}>
-                <td> {item["student_name"]}</td>
-                <td>
+    <section id="home-content">
+      <main className="table" id="customers_table">
+        {attendanceLoading ? loader : (<section className="table__body">
+          {isActive && (<p id="table-info">{lesson.para}chi para
+            - {dayjs(lesson.date).format("MMMM D")}</p>)}
+          <table>
+            <thead>
+            <tr>
+              <th> O'QUVCHI ISM FAMILYASI</th>
+              <th> STATUS</th>
+              <th> DAVOMAT</th>
+            </tr>
+            </thead>
+            <tbody>
+            {attendanceList.length > 0 && attendanceList.map(item => (
+                <tr key={item["student_name"]}>
+                  <td> {item["student_name"]}</td>
+                  <td>
               <span style={{cursor: "default"}}
                     className={clsx("table-button", "status-button", {
                       present: item["status"] === '+', absent: item["status"] === '-',
                     })}>{item["status"]}</span>
-                </td>
-                <td>
-                  <div className="table-buttons-wrapper">
+                  </td>
+                  <td>
+                    <div className="table-buttons-wrapper">
                     <span
                         onClick={() => studentAttendanceHandler(item["student_name"], "+")}
                         className="present table-button">+</span>
-                    <span
-                        onClick={() => studentAttendanceHandler(item["student_name"], "-")}
-                        className="absent table-button">-</span>
+                      <span
+                          onClick={() => studentAttendanceHandler(item["student_name"], "-")}
+                          className="absent table-button">-</span>
+                    </div>
+                  </td>
+                </tr>))}
+            </tbody>
+          </table>
+        </section>)}
+      </main>
+      <div id="qrcode-wrapper">
+        {expiresAt === null ? (<>
+          <button disabled={isActive}
+                  className="qrcode-generate-button"
+                  onClick={generateButtonHandler}>{loading ? loader : "Darsni boshlash"}</button>
+          <div id="qr-code">
+            {!isActive && (<div id="empty-qrcode-space">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                <path
+                    fill="#374151"
+                    d="M0 80C0 53.5 21.5 32 48 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48L0 80zM64 96l0 64 64 0 0-64L64 96zM0 336c0-26.5 21.5-48 48-48l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96zm64 16l0 64 64 0 0-64-64 0zM304 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm80 64l-64 0 0 64 64 0 0-64zM256 304c0-8.8 7.2-16 16-16l64 0c8.8 0 16 7.2 16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s7.2-16 16-16s16 7.2 16 16l0 96c0 8.8-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s-7.2-16-16-16s-16 7.2-16 16l0 64c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-160zM368 480a16 16 0 1 1 0-32 16 16 0 1 1 0 32zm64 0a16 16 0 1 1 0-32 16 16 0 1 1 0 32z"/>
+              </svg>
+              QR Kod be yerda bo'ladi
+            </div>)}
+            {isActive && (<QRCode
+                value={`http://localhost:5173/attendance/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
+                size={256}/>)}
+          </div>
+        </>) : (<Countdown
+            date={expiresAt}
+            renderer={({minutes, seconds, completed}) => {
+              if (completed) {
+                return (<>
+                  <button disabled={isActive}
+                          className="qrcode-generate-button"
+                          onClick={generateButtonHandler}>{loading ? loader : "Darsni boshlash"}</button>
+                  <div id="qr-code">
+                    {!isActive && (<div id="empty-qrcode-space">
+                      <svg xmlns="http://www.w3.org/2000/svg"
+                           viewBox="0 0 448 512">
+                        <path
+                            fill="#374151"
+                            d="M0 80C0 53.5 21.5 32 48 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48L0 80zM64 96l0 64 64 0 0-64L64 96zM0 336c0-26.5 21.5-48 48-48l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96zm64 16l0 64 64 0 0-64-64 0zM304 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm80 64l-64 0 0 64 64 0 0-64zM256 304c0-8.8 7.2-16 16-16l64 0c8.8 0 16 7.2 16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s7.2-16 16-16s16 7.2 16 16l0 96c0 8.8-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s-7.2-16-16-16s-16 7.2-16 16l0 64c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-160zM368 480a16 16 0 1 1 0-32 16 16 0 1 1 0 32zm64 0a16 16 0 1 1 0-32 16 16 0 1 1 0 32z"/>
+                      </svg>
+                      QR Kod be yerda bo'ladi
+                    </div>)}
+                    {isActive && (<QRCode
+                        value={`http://localhost:5173/attendance/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
+                        size={256}/>)}
                   </div>
-                </td>
-              </tr>))}
-          </tbody>
-        </table>
-      </section>)}
-    </main>
+                </>);
+              }
+              return (<>
+                <div id="qr-code">
+                  {!isActive && (<div id="empty-qrcode-space">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                      <path
+                          fill="#374151"
+                          d="M0 80C0 53.5 21.5 32 48 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48L0 80zM64 96l0 64 64 0 0-64L64 96zM0 336c0-26.5 21.5-48 48-48l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96zm64 16l0 64 64 0 0-64-64 0zM304 32l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96c0-26.5 21.5-48 48-48zm80 64l-64 0 0 64 64 0 0-64zM256 304c0-8.8 7.2-16 16-16l64 0c8.8 0 16 7.2 16 16s7.2 16 16 16l32 0c8.8 0 16-7.2 16-16s7.2-16 16-16s16 7.2 16 16l0 96c0 8.8-7.2 16-16 16l-64 0c-8.8 0-16-7.2-16-16s-7.2-16-16-16s-16 7.2-16 16l0 64c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-160zM368 480a16 16 0 1 1 0-32 16 16 0 1 1 0 32zm64 0a16 16 0 1 1 0-32 16 16 0 1 1 0 32z"/>
+                    </svg>
+                    QR Kod be yerda bo'ladi
+                  </div>)}
+                  {isActive && (<QRCode
+                      value={`http://localhost:5173/attendance/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
+                      size={256}/>)}
+                </div>
+                <button disabled={isActive}
+                        className="qr-code-timer disabled">{minutes} : {seconds}</button>
+              </>);
+            }}
+        />)}
+      </div>
+    </section>
     <ToastContainer/>
   </div>)
 };
