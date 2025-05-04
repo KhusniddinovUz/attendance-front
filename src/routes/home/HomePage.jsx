@@ -24,6 +24,7 @@ const HomePage = () => {
   const [lesson, setLesson] = useState(requestData);
   const token = useSelector(state => state.auth.token);
   const username = useSelector(state => state.auth.user["name"]);
+  const teacher_name = useSelector(state => state.auth.user["id"]);
   const [attendanceList, setAttendanceList] = useState([]);
   const loader = <div className="loader"></div>;
 
@@ -51,6 +52,9 @@ const HomePage = () => {
     const updateUserInfoHandler = async () => {
       try {
         await dispatch(updateUserInfo(token)).unwrap();
+        setLesson(prevState => ({
+          ...prevState, teacher_name: teacher_name,
+        }))
       } catch (error) {
         console.error('Error fetching user info:', error);
         dispatch(logout());
@@ -101,7 +105,6 @@ const HomePage = () => {
   }, [isActive])
 
   const generateButtonHandler = async () => {
-    console.log("clicked");
     let missing = [];
     if (lesson["group_name"] === "notchosen") missing.push("guruhni")
     if (lesson["para"] === "notchosen") missing.push("parani")
@@ -123,7 +126,8 @@ const HomePage = () => {
     } else {
       const resp = await dispatch(createLesson({lesson: lesson, token: token})).unwrap();
       setAttendanceList(resp);
-      const expirationTimer = lesson["para"] === "1" ? 900000 : 300000;
+      // const expirationTimer = lesson["para"] === "1" ? 900000 : 300000;
+      const expirationTimer = 6000;
       dispatch(turnOn({lesson: lesson, expirationTimer: expirationTimer}));
     }
   };
