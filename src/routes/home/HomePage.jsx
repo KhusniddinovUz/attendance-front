@@ -129,8 +129,8 @@ const HomePage = () => {
           lesson: lesson, token: token
         })).unwrap();
         setAttendanceList(resp);
-        // const expirationTimer = lesson["para"] === "1" ? 900000 : 300000;
-        const expirationTimer = 6000;
+        const expirationTimer = lesson["para"] === "1" ? 900000 : 300000;
+        // const expirationTimer = 6000;
         dispatch(turnOn({lesson: lesson, expirationTimer: expirationTimer}));
       } catch (e) {
         toast.error(e["non_field_errors"][0], {
@@ -279,7 +279,7 @@ const HomePage = () => {
               QR Kod be yerda bo'ladi
             </div>)}
             {isActive && (<QRCode
-                value={`http://localhost:5173/attendance/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
+                value={`http://portal.mahoratmarkaz.uz/attendance/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
                 size={256}/>)}
           </div>
         </>) : (<Countdown
