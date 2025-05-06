@@ -3,19 +3,21 @@ import logo from '../../assets/logo.png';
 import {useState} from "react";
 import clsx from "clsx";
 import {useDispatch, useSelector} from "react-redux";
-import {login, register} from "../../store/authSlice";
+import {login, adminLogin} from "../../store/authSlice";
 import {toast, ToastContainer} from "react-toastify";
+import {useNavigate} from "react-router";
 
 
 const AuthPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const loading = useSelector(state => state.auth.isLoading);
   const [loginName, setLoginName] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [registerUser, setRegisterUser] = useState({
-    username: "", password: "", name: ""
+    username: "", password: ""
   });
-  const [mode, setMode] = useState(false);
+  const [mode, setMode] = useState(true);
   const [bulletActiveIndex, setBulletActiveIndex] = useState(1);
   const [imageActiveIndex, setImageActiveIndex] = useState(1);
   const [textGroupStyle, setTextGroupStyle] = useState({transform: "translateY(0)"})
@@ -83,7 +85,6 @@ const AuthPage = () => {
   };
   const registerHandler = async () => {
     let warningMsg = [];
-    if (registerUser["name"] === "") warningMsg.push("ismingizni");
     if (registerUser["username"] === "") warningMsg.push("loginni");
     if (registerUser["password"] === "") warningMsg.push("parolni");
     if (warningMsg.length > 0) {
@@ -116,9 +117,10 @@ const AuthPage = () => {
       });
     } else {
       try {
-        await dispatch(register(registerUser)).unwrap();
+        await dispatch(adminLogin(registerUser)).unwrap();
+        navigate("/dashboard");
       } catch (err) {
-        toast.warning(err["username"][0], {
+        toast.warning(err["non_field_errors"][0], {
           style: {fontFamily: "Poppins"},
           position: "top-center",
           autoClose: 3000,
@@ -151,7 +153,7 @@ const AuthPage = () => {
                     type="button"
                     onClick={toggleClickHandler}
                     className="toggle">
-                  Ro'yxatdan o'tish
+                  Adminlar uchun kirish
                 </button>
               </div>
 
@@ -197,7 +199,7 @@ const AuthPage = () => {
 
               <div className="heading">
                 <h2>Xush kelibsiz</h2>
-                <h6>Ro'yxatdan o'tganmisiz?</h6>
+                <h6>O'qituvchilar uchun</h6>
                 <button
                     type="button"
                     onClick={toggleClickHandler}
@@ -206,22 +208,6 @@ const AuthPage = () => {
               </div>
 
               <div className="actual-form">
-                <div className="input-wrap">
-                  <input
-                      onChange={(e) => setRegisterUser({
-                        ...registerUser, name: e.target.value.trim()
-                      })}
-                      onFocus={inputFocusHandler}
-                      onBlur={inputBlurHandler}
-                      className="input-field"
-                      type="text"
-                      minLength="4"
-                      autoComplete="off"
-                      required
-                  />
-                  <label>Ism familiya</label>
-                </div>
-
                 <div className="input-wrap">
                   <input
                       onChange={(e) => setRegisterUser({
@@ -254,7 +240,7 @@ const AuthPage = () => {
                   <label>Parol</label>
                 </div>
                 <button onClick={registerHandler} type="button"
-                        className="sign-btn">{loading ? loader : "RO'YXATDAN O'TISH"}
+                        className="sign-btn">{loading ? loader : "KIRISH"}
                 </button>
               </div>
             </form>

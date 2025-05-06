@@ -11,12 +11,12 @@ export const login = createAsyncThunk('auth/login', async (credentials, {rejectW
   }
 });
 
-export const register = createAsyncThunk('auth/register', async (payload, {rejectWithValue}) => {
+export const adminLogin = createAsyncThunk('auth/adminLogin', async (payload, {rejectWithValue}) => {
   try {
-    const {data} = await axios.post(`${url}/api/teacher/register/`, payload);
+    const {data} = await axios.post(`${url}/api/teacher/admin-login/`, payload);
     return data;
   } catch (err) {
-    return rejectWithValue(err.response?.data || 'Registration failed');
+    return rejectWithValue(err.response?.data || 'Admin Login failed');
   }
 });
 
@@ -57,16 +57,15 @@ const authSlice = createSlice({
     builder.addCase(login.rejected, (state) => {
       state.isLoading = false;
     });
-    builder.addCase(register.pending, state => {
+    builder.addCase(adminLogin.pending, state => {
       state.isLoading = true;
     });
-    builder.addCase(register.fulfilled, (state, action) => {
+    builder.addCase(adminLogin.fulfilled, (state, action) => {
       state.isLoading = false;
       state.isLoggedIn = true;
-      state.user = action.payload.user;
       state.token = action.payload.token;
     })
-    builder.addCase(register.rejected, state => {
+    builder.addCase(adminLogin.rejected, state => {
       state.isLoading = false;
     });
     builder.addCase(updateUserInfo.pending, state => {

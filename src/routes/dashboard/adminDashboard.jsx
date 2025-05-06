@@ -66,9 +66,9 @@ const AdminDashboard = () => {
     } else {
       setLoading(true);
       console.log(groupName, startDate, endDate);
-      await axios.get(`${url}/api/attendance/get/`, {
+      await axios.get(`${url}/api/attendance/dashboard/`, {
         params: {
-          "group_name": groupName, "date": startDate,
+          "group_name": groupName, "start_date": startDate, "end_date": endDate,
         },
       }).then(res => {
         setViewingTable(true);
