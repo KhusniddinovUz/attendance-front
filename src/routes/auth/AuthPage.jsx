@@ -17,7 +17,7 @@ const AuthPage = () => {
   const [registerUser, setRegisterUser] = useState({
     username: "", password: ""
   });
-  const [mode, setMode] = useState(true);
+  const [mode, setMode] = useState(false);
   const [bulletActiveIndex, setBulletActiveIndex] = useState(1);
   const [imageActiveIndex, setImageActiveIndex] = useState(1);
   const [textGroupStyle, setTextGroupStyle] = useState({transform: "translateY(0)"})

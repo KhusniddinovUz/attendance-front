@@ -64,6 +64,7 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.isLoggedIn = true;
       state.token = action.payload.token;
+      state.user = action.payload.user;
     })
     builder.addCase(adminLogin.rejected, state => {
       state.isLoading = false;

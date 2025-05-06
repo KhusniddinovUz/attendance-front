@@ -4,18 +4,40 @@ import AuthPage from "./routes/auth/AuthPage.jsx";
 import AttendancePage from "./routes/attendance/AttendancePage.jsx";
 import AdminDashboard from "./routes/dashboard/adminDashboard.jsx";
 import {Routes, Route} from "react-router";
-import {RedirectIfAuthWrapper, RequireAuthWrapper} from "./components/AuthWrappers";
+import {
+  AdminOnlyWrapper, RedirectIfAuthWrapper, RequireAuthWrapper, TeacherOnlyWrapper
+} from "./components/AuthWrappers";
 
 const App = () => {
   return (<Routes>
     <Route index path="/"
-           element={<RequireAuthWrapper><HomePage/></RequireAuthWrapper>}/>
+           element={
+             <RequireAuthWrapper>
+               <TeacherOnlyWrapper>
+                 <HomePage/>
+               </TeacherOnlyWrapper>
+             </RequireAuthWrapper>}
+    />
     <Route path="dashboard"
-           element={<RequireAuthWrapper><AdminDashboard/></RequireAuthWrapper>}/>
+           element={
+             <RequireAuthWrapper>
+               <AdminOnlyWrapper>
+                 <AdminDashboard/>
+               </AdminOnlyWrapper>
+             </RequireAuthWrapper>}
+    />
     <Route path="auth"
-           element={<RedirectIfAuthWrapper><AuthPage/></RedirectIfAuthWrapper>}/>
+           element={
+             <RedirectIfAuthWrapper>
+               <AuthPage/>
+             </RedirectIfAuthWrapper>}
+    />
     <Route path="attendance/:group_name/:date/:para"
-           element={<RequireAuthWrapper><AttendancePage/></RequireAuthWrapper>}/>
+           element={
+             <RequireAuthWrapper>
+               <AttendancePage/>
+             </RequireAuthWrapper>}
+    />
   </Routes>);
 }
 

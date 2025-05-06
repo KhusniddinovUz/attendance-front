@@ -1,4 +1,20 @@
 #adminDashboard {
+  #admin-logout {
+    position: absolute;
+    top: 20px;
+    right: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+  }
+
   .submitted {
     display: none !important;
   }
