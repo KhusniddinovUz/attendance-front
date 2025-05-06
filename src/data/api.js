@@ -1,1 +1,1 @@
-export const url = "https://portal.mahoratmarkaz.uz/";
+export const url = "https://portal.mahoratmarkaz.uz";
