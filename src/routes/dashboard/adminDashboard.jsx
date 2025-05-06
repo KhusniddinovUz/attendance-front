@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import "../../styles/dashboard.css";
 import {format} from "date-fns";
 import DatePicker from "react-datepicker";
@@ -12,9 +12,13 @@ import {toast} from "react-toastify";
 import axios from "axios";
 import {url} from "../../data/api.js";
 import clsx from "clsx";
+import * as XLSX from "xlsx";
+import {saveAs} from "file-saver";
+import {getTableContent} from "../../utils/getTableContent.js";
 
 const AdminDashboard = () => {
   const dispatch = useDispatch();
+  const gridRef = useRef(null);
   const user = useSelector(state => state.auth.user);
   const token = useSelector(state => state.auth.token);
   const groups = useSelector(state => state.group.groups);
@@ -67,7 +71,6 @@ const AdminDashboard = () => {
       });
     } else {
       setLoading(true);
-      console.log(groupName, startDate, endDate);
       await axios.get(`${url}/api/attendance/dashboard/`, {
         params: {
           "group_name": groupName, "start_date": startDate, "end_date": endDate,
@@ -112,8 +115,49 @@ const AdminDashboard = () => {
     dispatch(logout());
   }
 
+  const handleExport = () => {
+    const data = getTableContent(gridRef.current.element);
+    const lines = data
+        .trim()
+        .split('\n')
+        .map((line) => line.split(','));
+    const dates = lines[0]; // ['06.01.2025','06.02.2025','06.03.2025']
+    const header2 = lines[1]; // ['F.I.SH.','1','2','3','1','2','3','1','2','3']
+    const rows = lines.slice(2); // data rows
+
+    // Build the first header row with merged date spans
+    const header1 = [''];
+    dates.forEach((date) => {
+      header1.push(date);
+      header1.push('');
+      header1.push('');
+    });
+
+    // Build the sheet as an array-of-arrays
+    const aoa = [header1, header2, ...rows];
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+    // Build merge ranges:
+    const merges = [];
+    // Merge the F.I.SH. column vertically (A1: A2)
+    merges.push({s: {r: 0, c: 0}, e: {r: 1, c: 0}});
+    // Merge each date across its three child cols
+    dates.forEach((_, i) => {
+      const startCol = 1 + i * 3;
+      const endCol = startCol + 2;
+      merges.push({s: {r: 0, c: startCol}, e: {r: 0, c: endCol}});
+    });
+    ws['!merges'] = merges;
+
+    // Create a workbook and trigger download
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    const wbout = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
+    saveAs(new Blob([wbout], {type: 'application/octet-stream'}), 'Davomat.xlsx');
+  }
+
   return (<div id="adminDashboard">
-    <div id="admin-logout">
+    <div id="admin-logout" className={clsx(viewingTable && "submitted")}>
       <h3>{user.username}</h3>
       <svg onClick={handleLogout} xmlns="http://www.w3.org/2000/svg"
            viewBox="0 0 512 512">
@@ -156,7 +200,9 @@ const AdminDashboard = () => {
     </div>
 
     <div id="dashboard-table" className={clsx(!viewingTable && "submitted")}>
+      <button className="export-button" onClick={handleExport}>Excelga saqlash</button>
       <DataGrid
+          ref={gridRef}
           className='table rdg-light'
           columns={columns}
           rows={rows}

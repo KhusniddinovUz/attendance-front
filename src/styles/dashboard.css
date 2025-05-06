@@ -79,6 +79,22 @@
   background-color: #21409A;
   color: #fff;
 }
+#adminDashboard #dashboard-table {
+  background-color: #fff;
+}
+#adminDashboard #dashboard-table .export-button {
+  float: right;
+  background-color: #15803D;
+  color: #fff;
+  font-weight: 500;
+  padding: 10px 20px;
+  border: none;
+  outline: none;
+  border-radius: 10px;
+  margin: 10px 20px;
+  cursor: pointer;
+  font-family: inherit;
+}
 #adminDashboard #dashboard-table .table {
   width: 100%;
   height: 100%;
