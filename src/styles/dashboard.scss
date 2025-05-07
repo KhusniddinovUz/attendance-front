@@ -114,11 +114,15 @@
       width: 100%;
       height: 100%;
       text-align: center;
-    }
 
-    .table .table-student-name {
-      text-align: left;
-      padding-left: 15px;
+      .table-student-name {
+        text-align: left;
+        padding-left: 15px;
+      }
+
+      .wrap-header {
+        padding: 0 10px;
+      }
     }
 
   }

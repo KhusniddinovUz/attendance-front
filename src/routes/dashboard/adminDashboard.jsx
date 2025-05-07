@@ -76,33 +76,83 @@ const AdminDashboard = () => {
           "group_name": groupName, "start_date": startDate, "end_date": endDate,
         },
       }).then(res => {
+        const data = res.data;
         setViewingTable(true);
-        let dates = new Set();
-        let draft = {};
-        res.data.forEach(student => {
-          dates.add(student.date);
-          if (draft[student.student_name] === undefined) draft[student.student_name] = [];
-          draft[student.student_name].push([`para-${student.lesson_name}-${student.date}`, student.status])
+        const students = Array.from(new Set(data.map((x) => x.student_name)));
+        const dates = Array.from(new Set(data.map((x) => x.date))).sort();
+        const paras = Array.from(new Set(data.map((x) => x.lesson_name))).sort((a, b) => Number(a) - Number(b));
+
+        // 2. Precompute teacher per (date, para)
+        const teacherMap = {};
+        data.forEach((x) => {
+          teacherMap[`${x.date}_${x.lesson_name}`] = x.teacher_name;
         });
-        //Add columns to the table
-        dates.forEach(date => {
-          let obj = {
-            name: date, children: [{key: `para-1-${date}`, name: '1'}, {
-              key: `para-2-${date}`, name: '2'
-            }, {key: `para-3-${date}`, name: '3'},],
-          };
-          setColumns(prevState => [...prevState, obj]);
-        });
-        //Add rows
-        for (const [key, value] of Object.entries(draft)) {
-          let newRow = {
-            id: key,
-          };
-          value.forEach(val => {
-            newRow[val[0]] = val[1];
+
+        // 3. Build nested columns: one group per date, children per para
+        const cols = [{
+          key: 'student_name',
+          name: 'F.I.S.H.',
+          frozen: true,
+          cellClass: 'table-student-name',
+          width: 250,
+        }];
+        dates.forEach((date) => {
+          cols.push({
+            key: date,
+            name: date,
+            headerCellClass: 'wrap-header',
+            children: paras.map((para) => {
+              const teacher = teacherMap[`${date}_${para}`] || '';
+              return {
+                key: `${date}_${para}`,
+                name: `${para} – ${teacher}`, // Header shows para and teacher
+                resizeable: true,
+                headerCellClass: 'wrap-header',
+              };
+            }),
           });
-          setRows(prevState => [...prevState, newRow]);
-        }
+        });
+
+        // 4. Pivot rows: one row per student, one cell per (date_para) = status
+        const pivoted = students.map((student) => {
+          const row = {student_name: student};
+          dates.forEach((date) => {
+            paras.forEach((para) => {
+              const rec = data.find((x) => x.student_name === student && x.date === date && x.lesson_name === para);
+              row[`${date}_${para}`] = rec ? rec.status : '';
+            });
+          });
+          return row;
+        });
+
+        setColumns(cols);
+        setRows(pivoted);
+        // let dates = new Set();
+        // let draft = {};
+        // res.data.forEach(student => {
+        //   dates.add(student.date);
+        //   if (draft[student.student_name] === undefined) draft[student.student_name] = [];
+        //   draft[student.student_name].push([`para-${student.lesson_name}-${student.date}`, student.status])
+        // });
+        // //Add columns to the table
+        // dates.forEach(date => {
+        //   let obj = {
+        //     name: date, children: [{key: `para-1-${date}`, name: '1'}, {
+        //       key: `para-2-${date}`, name: '2'
+        //     }, {key: `para-3-${date}`, name: '3'},],
+        //   };
+        //   setColumns(prevState => [...prevState, obj]);
+        // });
+        // //Add rows
+        // for (const [key, value] of Object.entries(draft)) {
+        //   let newRow = {
+        //     id: key,
+        //   };
+        //   value.forEach(val => {
+        //     newRow[val[0]] = val[1];
+        //   });
+        //   setRows(prevState => [...prevState, newRow]);
+        // }
         setLoading(false);
       }).catch(err => {
         console.log(err);

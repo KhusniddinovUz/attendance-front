@@ -104,5 +104,8 @@
   text-align: left;
   padding-left: 15px;
 }
+#adminDashboard #dashboard-table .table .wrap-header {
+  padding: 0 10px;
+}
 
 /*# sourceMappingURL=dashboard.css.map */
