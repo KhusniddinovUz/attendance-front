@@ -38,9 +38,10 @@
   cursor: pointer;
   font-family: inherit;
   background-color: #21409A;
-  height: fit-content;
+  height: 50px;
   color: white;
-  padding: 12px;
+  padding: 10px 42px 10px 12px;
+  text-overflow: ellipsis;
   width: 250px;
   border: none;
   border-radius: 10px;
@@ -52,6 +53,7 @@
   outline: none;
 }
 #attendance-page .student-list select option {
+  width: 200px;
   color: #fff;
   padding: 30px;
 }
@@ -59,7 +61,7 @@
 @media (max-width: 500px) {
   #attendance-page {
     padding: 50px 0;
-    height: 100vh;
+    height: 100svh;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;

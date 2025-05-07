@@ -301,7 +301,7 @@ const HomePage = () => {
                       QR Kod be yerda bo'ladi
                     </div>)}
                     {isActive && (<QRCode
-                        value={`http://localhost:5173/attendance/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
+                        value={`http://portal.mahoratmarkaz.uz/attendance/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
                         size={256}/>)}
                   </div>
                 </>);
@@ -317,7 +317,7 @@ const HomePage = () => {
                     QR Kod be yerda bo'ladi
                   </div>)}
                   {isActive && (<QRCode
-                      value={`http://localhost:5173/attendance/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
+                      value={`http://portal.mahoratmarkaz.uz/attendance/${lesson["group_name"]}/${lesson["date"]}/${lesson["para"]}`}
                       size={256}/>)}
                 </div>
                 <button disabled={isActive}

@@ -11,32 +11,26 @@ import {
 const App = () => {
   return (<Routes>
     <Route index path="/"
-           element={
-             <RequireAuthWrapper>
-               <TeacherOnlyWrapper>
-                 <HomePage/>
-               </TeacherOnlyWrapper>
-             </RequireAuthWrapper>}
+           element={<RequireAuthWrapper>
+             <TeacherOnlyWrapper>
+               <HomePage/>
+             </TeacherOnlyWrapper>
+           </RequireAuthWrapper>}
     />
     <Route path="dashboard"
-           element={
-             <RequireAuthWrapper>
-               <AdminOnlyWrapper>
-                 <AdminDashboard/>
-               </AdminOnlyWrapper>
-             </RequireAuthWrapper>}
+           element={<RequireAuthWrapper>
+             <AdminOnlyWrapper>
+               <AdminDashboard/>
+             </AdminOnlyWrapper>
+           </RequireAuthWrapper>}
     />
     <Route path="auth"
-           element={
-             <RedirectIfAuthWrapper>
-               <AuthPage/>
-             </RedirectIfAuthWrapper>}
+           element={<RedirectIfAuthWrapper>
+             <AuthPage/>
+           </RedirectIfAuthWrapper>}
     />
     <Route path="attendance/:group_name/:date/:para"
-           element={
-             <RequireAuthWrapper>
-               <AttendancePage/>
-             </RequireAuthWrapper>}
+           element={<AttendancePage/>}
     />
   </Routes>);
 }
