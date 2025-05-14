@@ -161,9 +161,7 @@ const HomePage = () => {
       console.log(err);
     }).then(res => {
       setAttendanceList(res.data);
-      setTimeout(() => {
-        setAttendanceLoading(false);
-      }, 300);
+      setAttendanceLoading(false);
     })
   };
 
@@ -228,7 +226,7 @@ const HomePage = () => {
     </nav>
     <section id="home-content">
       <main className="table" id="customers_table">
-        {attendanceLoading ? loader : (<section className="table__body">
+        <section className="table__body">
           {isActive && (<p id="table-info">{lesson.para}chi para
             - {dayjs(lesson.date).format("MMMM D")}</p>)}
           <table>
@@ -240,9 +238,9 @@ const HomePage = () => {
             </tr>
             </thead>
             <tbody>
-            {attendanceList.length > 0 && attendanceList.map(item => (
+            {attendanceList.length > 0 && attendanceList.map((item, count) => (
                 <tr key={item["student_name"]}>
-                  <td> {item["student_name"]}</td>
+                  <td>{count + 1}. {item["student_name"]}</td>
                   <td>
               <span style={{cursor: "default"}}
                     className={clsx("table-button", "status-button", {
@@ -262,7 +260,7 @@ const HomePage = () => {
                 </tr>))}
             </tbody>
           </table>
-        </section>)}
+        </section>
       </main>
       <div id="qrcode-wrapper">
         {expiresAt === null ? (<>
