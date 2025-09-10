@@ -25,6 +25,7 @@ const AdminDashboard = () => {
   const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
   const [groupName, setGroupName] = useState(null);
+  const [showLateLessons, setShowLateLessons] = useState(null);
   const [viewingTable, setViewingTable] = useState(false);
   const [columns, setColumns] = useState([{
     key: 'id', name: 'F.I.SH.', width: 250, cellClass: 'table-student-name'
@@ -54,6 +55,8 @@ const AdminDashboard = () => {
     let missing = [];
     if (groupName == null) missing.push("guruhni");
     if (start == null) missing.push("kunlarni");
+    if (showLateLessons == null) missing.push("dars xolatini");
+    console.log(showLateLessons);
     if (missing.length > 0) {
       const last = missing.pop();
       let prompt = missing.length ? `${missing.join(", ")} va ${last} tanlang` : `${last} tanlang`;
@@ -73,10 +76,14 @@ const AdminDashboard = () => {
       setLoading(true);
       await axios.get(`${url}/api/attendance/dashboard/`, {
         params: {
-          "group_name": groupName, "start_date": startDate, "end_date": endDate,
+          "group_name": groupName,
+          "start_date": startDate,
+          "end_date": endDate,
+          "lessons": showLateLessons,
         },
       }).then(res => {
         const data = res.data;
+        console.log(data);
         setViewingTable(true);
         const students = Array.from(new Set(data.map((x) => x.student_name)));
         const dates = Array.from(new Set(data.map((x) => x.date))).sort();
@@ -206,62 +213,80 @@ const AdminDashboard = () => {
     saveAs(new Blob([wbout], {type: 'application/octet-stream'}), 'Davomat.xlsx');
   }
 
-  return (<div id="adminDashboard">
-    <div id="admin-logout" className={clsx(viewingTable && "submitted")}>
-      <h3>{user.username}</h3>
-      <svg onClick={handleLogout} xmlns="http://www.w3.org/2000/svg"
-           viewBox="0 0 512 512">
-        <path fill="#000"
-              d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 192 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z"/>
-      </svg>
-    </div>
-    <div className={clsx("form-wrapper", viewingTable && "submitted")}>
-      <div className="select-wrap">
-        <select
-            defaultValue=""
-            onChange={e => setGroupName(e.target.value)}>
-          <option value="" disabled={true} hidden>Guruhni tanlash</option>
-          {groups.map(group => <option value={group.id}
-                                       key={group.id}>{group.name}</option>)}
-        </select>
-        <svg xmlns="http://www.w3.org/2000/svg" height="32" width="20"
-             viewBox="0 0 320 512">
-          <path fill="#374151"
-                d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"/>
-        </svg>
-      </div>
-      <div>
-        <DatePicker
-            className='date-picker'
-            selectsRange
-            startDate={start}
-            endDate={end}
-            onChange={(dates) => {
-              const [from, to] = dates;
-              setStart(from);
-              setEnd(to);
-            }}
-            isClearable
-            placeholderText='Kunlarni tanlash'
-        />
-      </div>
-      <button id="dashboard-form-btn"
-              onClick={handleSubmit}>{loading ? loader : "Jadvalni ko'rish"}</button>
-    </div>
+  return (
+      <div id="adminDashboard">
+        <div id="admin-logout" className={clsx(viewingTable && "submitted")}>
+          <h3>{user.username}</h3>
+          <svg onClick={handleLogout} xmlns="http://www.w3.org/2000/svg"
+               viewBox="0 0 512 512">
+            <path fill="#000"
+                  d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 192 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z"/>
+          </svg>
+        </div>
+        <div className={clsx("form-wrapper", viewingTable && "submitted")}>
+          <div className="select-wrap">
+            <select
+                defaultValue=""
+                onChange={e => setGroupName(e.target.value)}>
+              <option value="" disabled={true} hidden>Guruhni tanlash</option>
+              {groups.map(group => <option value={group.id}
+                                           key={group.id}>{group.name}</option>)}
+            </select>
+            <svg xmlns="http://www.w3.org/2000/svg" height="32" width="20"
+                 viewBox="0 0 320 512">
+              <path fill="#374151"
+                    d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"/>
+            </svg>
+          </div>
+          <div>
+            <DatePicker
+                className='date-picker'
+                selectsRange
+                startDate={start}
+                endDate={end}
+                onChange={(dates) => {
+                  const [from, to] = dates;
+                  setStart(from);
+                  setEnd(to);
+                }}
+                isClearable
+                placeholderText='Kunlarni tanlash'
+            />
+          </div>
+          <div className="select-wrap">
+            <select
+                defaultValue=""
+                onChange={e => setShowLateLessons(e.target.value)}>
+              <option value="" disabled={true} hidden>Dars xolatini tanlash</option>
+              <option value="all">Hamma darslar</option>
+              <option value="late">LATE</option>
+              <option value="not-late">NOT LATE</option>
+            </select>
+            <svg xmlns="http://www.w3.org/2000/svg" height="32" width="20"
+                 viewBox="0 0 320 512">
+              <path fill="#374151"
+                    d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"/>
+            </svg>
+          </div>
+          <button id="dashboard-form-btn"
+                  onClick={handleSubmit}>{loading ? loader : "Jadvalni ko'rish"}</button>
+        </div>
 
-    <div id="dashboard-table" className={clsx(!viewingTable && "submitted")}>
-      <button className="export-button" onClick={handleExport}>Excelga saqlash</button>
-      <DataGrid
-          ref={gridRef}
-          className='table rdg-light'
-          columns={columns}
-          rows={rows}
-          defaultColumnOptions={{
-            sortable: true, resizable: true,
-          }}
-      />
-    </div>
-  </div>)
+        <div id="dashboard-table" className={clsx(!viewingTable && "submitted")}>
+          <button className="export-button" onClick={handleExport}>Excelga saqlash
+          </button>
+          <DataGrid
+              ref={gridRef}
+              className='table rdg-light'
+              columns={columns}
+              rows={rows}
+              defaultColumnOptions={{
+                sortable: true, resizable: true,
+              }}
+          />
+        </div>
+      </div>
+  )
 };
 
 export default AdminDashboard;

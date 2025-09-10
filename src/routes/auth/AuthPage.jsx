@@ -68,17 +68,32 @@ const AuthPage = () => {
           username: loginName, password: loginPassword,
         })).unwrap();
       } catch (err) {
-        toast.error(err["non_field_errors"][0], {
-          style: {fontFamily: "Poppins"},
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
+        if (err["non_field_errors"]) {
+          toast.error(err["non_field_errors"][0], {
+            style: {fontFamily: "Poppins"},
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+        } else {
+          toast.error(err, {
+            style: {fontFamily: "Poppins"},
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+        }
+
       }
     }
 
@@ -120,17 +135,31 @@ const AuthPage = () => {
         await dispatch(adminLogin(registerUser)).unwrap();
         navigate("/dashboard");
       } catch (err) {
-        toast.warning(err["non_field_errors"][0], {
-          style: {fontFamily: "Poppins"},
-          position: "top-center",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
+        if (err["non_field_errors"]) {
+          toast.error(err["non_field_errors"][0], {
+            style: {fontFamily: "Poppins"},
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+        } else {
+          toast.error(err, {
+            style: {fontFamily: "Poppins"},
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+        }
       }
     }
   };

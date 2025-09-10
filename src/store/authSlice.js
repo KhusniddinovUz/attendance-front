@@ -7,7 +7,7 @@ export const login = createAsyncThunk('auth/login', async (credentials, {rejectW
     const {data} = await axios.post(`${url}/api/teacher/login/`, credentials);
     return data;
   } catch (err) {
-    return rejectWithValue(err.response?.data || 'Login failed');
+    return rejectWithValue(err.response?.data || `Serverda xatolik, keyinroq urinib ko'ring`);
   }
 });
 
@@ -16,7 +16,7 @@ export const adminLogin = createAsyncThunk('auth/adminLogin', async (payload, {r
     const {data} = await axios.post(`${url}/api/teacher/admin-login/`, payload);
     return data;
   } catch (err) {
-    return rejectWithValue(err.response?.data || 'Admin Login failed');
+    return rejectWithValue(err.response?.data || `Serverda xatolik, keyinroq urinib ko'ring`);
   }
 });
 
