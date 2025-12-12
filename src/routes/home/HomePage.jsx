@@ -217,6 +217,7 @@ const HomePage = () => {
                 <option value={1}>1</option>
                 <option value={2}>2</option>
                 <option value={3}>3</option>
+                <option value={4}>4</option>
               </select>
               <svg xmlns="http://www.w3.org/2000/svg" height="32" width="20"
                    viewBox="0 0 320 512">
