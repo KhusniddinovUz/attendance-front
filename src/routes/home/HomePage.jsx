@@ -235,9 +235,8 @@ const HomePage = () => {
           </div>
         </nav>
         <section id="home-content">
-          <h1 className={clsx(("disabled-table-text"), {"disabled-table": isTeacherLate})}>Siz
-            darsga kech
-            qoldingiz!</h1>
+          <h1 className={clsx(("disabled-table-text"), {"disabled-table": isTeacherLate})}> Siz
+            davomat olishga kech qoldingiz!</h1>
           <main className="table" id="customers_table">
             <section className="table__body">
               {isActive && (<p id="table-info">{lesson.para}chi para
