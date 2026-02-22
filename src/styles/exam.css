@@ -1,0 +1,92 @@
+.exam-page-wrapper {
+    .exam-page-header {
+        margin-top: 20px;
+        position: relative;
+        width: 100vw;
+
+        h1 {
+            width: 100%;
+            text-align: center;
+        }
+
+        a {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #21409A;
+            padding: 12px;
+            border-radius: 10px;
+            color: #fff;
+            text-decoration: none;
+        }
+    }
+
+    .exam-page-content-wrapper {
+        display: flex;
+        justify-content: center;
+
+        .exam-page-content {
+            margin-top: 50px;
+            width: 70%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            button {
+                cursor: pointer;
+                padding: 12px;
+                border-radius: 10px;
+                background-color: #21409A;
+                color: #fff;
+                outline: none;
+                border: none;
+                font-size: 20px;
+            }
+
+            input {
+                padding: 12px;
+                width: 100px;
+                border-radius: 10px;
+                outline: none;
+                border: none;
+                background-color: #E5E7EB;
+                color: #374151;
+                font-size: 20px;
+
+                &::placeholder {
+                    opacity: 1;
+                }
+            }
+
+            select {
+                width: 250px;
+                cursor: pointer;
+                font-family: inherit;
+                background-color: #E5E7EB;
+                height: fit-content;
+                color: #374151;
+                padding: 12px;
+                border: none;
+                border-radius: 10px;
+                font-size: 20px;
+                -webkit-appearance: none;
+                appearance: none;
+                -moz-appearance: none;
+                outline: none;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+
+                option {
+                    background: #fff;
+                    padding: 30px;
+
+                    &:hover {
+                        background: #374151 !important;
+                    }
+                }
+            }
+        }
+    }
+}

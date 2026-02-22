@@ -66,6 +66,21 @@
 					pointer-events: none;
 				}
 			}
+
+			.exam-button {
+				position: absolute;
+				right: 30px;
+				bottom: 30px;
+				background-color: #21409A;
+				font-size: 20px;
+				padding: 12px;
+				border-radius: 10px;
+
+				a {
+					color: #fff;
+					text-decoration: none;
+				}
+			}
 		}
 
 		#home-logut {
