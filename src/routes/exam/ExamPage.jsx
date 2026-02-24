@@ -2,19 +2,36 @@ import {useState} from "react";
 import {NavLink, useNavigate} from "react-router-dom";
 import {useSelector} from "react-redux";
 import '../../styles/exam.css';
+import axios from "axios";
+import {url} from "../../data/api.js";
 
 const ExamPage = () => {
   const navigate = useNavigate();
   const groups = useSelector(state => state.group.groups);
+  const token = useSelector(state => state.auth.token);
+  const [studentList, setStudentList] = useState([]);
   const [student, setStudent] = useState("");
-  const [group, setGroup] = useState("");
+  const [mark, setMark] = useState("");
 
-  const onGroupChange = (e) => {
-    console.log(e.target.value);
+  const onGroupChange = async(e) => {
+      const {data} = await axios.get(`${url}/api/group/groups/${e.target.value}/students/`, {
+          headers: {"Authorization": `Token ${token}`},
+      });
+      setStudentList(data);
+      console.log(data);
   }
 
-  const onSubmit = () => {
-    navigate("/");
+  const onSubmit = async() => {
+      const body = {
+          "student_id": student,
+          "mark": mark,
+      };
+      console.log(body);
+      const {data} = await axios.post(`${url}/api/finalmark/marks/`, body,{
+          headers: {"Authorization": `Token ${token}`},
+      });
+      console.log(data);
+        // navigate("/");
   }
 
   return (<div className="exam-page-wrapper">
@@ -43,12 +60,12 @@ const ExamPage = () => {
                 }}
             >
               <option value="" disabled={true} hidden>O'quvchini tanlash</option>
-              <option value="1">O'quvchi no 1</option>
-              <option value="2">O'quvchi no 2</option>
-              <option value="3">O'quvchi no 3</option>
-              <option value="4">O'quvchi no 4</option>
+                {studentList.map(group => <option value={group.id}
+                                             key={group.id}>{group.name}</option>)}
             </select>
-            <input type="text" placeholder="Baho"/>
+            <input type="text" placeholder="Baho" value={mark} onChange={e => {
+                setMark(e.target.value);
+            }}/>
             <button onClick={onSubmit}>Baholash</button>
           </div>
         </div>
